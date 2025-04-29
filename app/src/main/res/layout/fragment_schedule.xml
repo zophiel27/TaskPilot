@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical"
+    tools:context=".ScheduleFragment">
+
+        <CalendarView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:firstDayOfWeek="2"
+            android:minDate="01/01/2021"
+            android:shownWeekCount="6"
+            android:selectedWeekBackgroundColor="#009688"
+            android:focusedMonthDateColor="#2196F3"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lvTasks"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="16dp"
+            />
+
+</LinearLayout>
