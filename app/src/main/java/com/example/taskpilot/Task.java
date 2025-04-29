@@ -6,7 +6,25 @@ public class Task {
     String date;
     String time;
 
+    public String getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(String reminder) {
+        this.reminder = reminder;
+    }
+
+    String reminder;
+
     public Task() {
+    }
+
+    public Task(String title, String description, String date, String time, String reminder) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.time = time;
+        this.reminder = reminder;
     }
 
     public Task(String title, String description, String date, String time) {
