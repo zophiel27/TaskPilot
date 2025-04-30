@@ -141,6 +141,37 @@ public class TaskDb {
         cursor.close();
         return tasks;
     }
+    public ArrayList<Task> getFutureTasks(String currentDate) {
+        ArrayList<Task> futureTasks = new ArrayList<>();
+        Cursor cursor = database.query(TABLE_NAME,
+                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_DESC, COLUMN_DATE, COLUMN_START_TIME, COLUMN_END_TIME, COLUMN_REMINDER},
+                COLUMN_DATE + " >= ?",
+                new String[]{currentDate},
+                null, null, COLUMN_DATE + " ASC, " + COLUMN_START_TIME + " ASC");
+
+        int nameIndex = cursor.getColumnIndex(COLUMN_NAME);
+        int descIndex = cursor.getColumnIndex(COLUMN_DESC);
+        int dateIndex = cursor.getColumnIndex(COLUMN_DATE);
+        int startIndex = cursor.getColumnIndex(COLUMN_START_TIME);
+        int endIndex = cursor.getColumnIndex(COLUMN_END_TIME);
+        int reminderIndex = cursor.getColumnIndex(COLUMN_REMINDER);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Task task = new Task();
+
+                task.setName(cursor.getString(nameIndex));
+                task.setDescription(cursor.getString(descIndex));
+                task.setDate(cursor.getString(dateIndex));
+                task.setTime(cursor.getString(startIndex) + " - " + cursor.getString(endIndex));
+                task.setReminder(cursor.getString(reminderIndex));
+
+                futureTasks.add(task);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return futureTasks;
+    }
 
     private class MyOpenHelper extends SQLiteOpenHelper
     {

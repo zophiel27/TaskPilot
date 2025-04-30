@@ -22,8 +22,10 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +40,7 @@ public class ScheduleFragment extends Fragment {
     private ArrayList<Task> taskList = new ArrayList<>();
     FloatingActionButton fabAddTask;
     private TaskAdapter adapter;
+    private String currentDate;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -82,6 +85,8 @@ public class ScheduleFragment extends Fragment {
 
         tasksListView = view.findViewById(R.id.lvTasks);
         fabAddTask = view.findViewById(R.id.fabAddTask);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        currentDate = sdf.format(new Date());
 
 //        taskList.add(new Task("Design new UX flow for Michael", "Start from screen 16", "04/01/2025", "14:00 - 15:00"));
 //        taskList.add(new Task("Brainstorm with the team", "Define the problem or question that...", "04/01/2025", "14:00 - 15:00"));
@@ -93,10 +98,9 @@ public class ScheduleFragment extends Fragment {
         db.open();
 
         // populate the list view
-        taskList.addAll(db.getAllTasks());
+        taskList.addAll(db.getFutureTasks(currentDate));
         adapter = new TaskAdapter(getContext(), taskList);
         tasksListView.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();
 
         db.close();
 
@@ -195,12 +199,15 @@ public class ScheduleFragment extends Fragment {
             // all validation checks have passed and so task can be stored in db
             TaskDb db = new TaskDb(getActivity());
             db.open();
+
             // insert in database
             db.insert(taskName, description, date, startTime, endTime, reminder);
+
             // update the list view as well
             taskList.clear();
-            taskList.addAll(db.getAllTasks());
+            taskList.addAll(db.getFutureTasks(currentDate));
             adapter.notifyDataSetChanged();
+
             db.close();
         });
 
