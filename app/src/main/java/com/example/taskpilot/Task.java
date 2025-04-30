@@ -5,6 +5,7 @@ public class Task {
     String description;
     String date;
     String time;
+    String reminder;
 
     public String getReminder() {
         return reminder;
@@ -13,8 +14,6 @@ public class Task {
     public void setReminder(String reminder) {
         this.reminder = reminder;
     }
-
-    String reminder;
 
     public Task() {
     }
@@ -34,12 +33,8 @@ public class Task {
         this.time = time;
     }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     public String getDescription() {
         return description;

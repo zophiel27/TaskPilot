@@ -18,7 +18,7 @@ public class TaskDb {
     MyOpenHelper helper;
 
     private final String DATABASE_NAME = "TaskDB";
-    private final int DATABASE_VERSION = 1;
+    private final int DATABASE_VERSION = 2;
 
     private static final String TABLE_NAME = "tasks";
     private static final String COLUMN_ID = "id";
@@ -142,12 +142,18 @@ public class TaskDb {
         return tasks;
     }
     public ArrayList<Task> getFutureTasks(String currentDate) {
+
         ArrayList<Task> futureTasks = new ArrayList<>();
-        Cursor cursor = database.query(TABLE_NAME,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_DESC, COLUMN_DATE, COLUMN_START_TIME, COLUMN_END_TIME, COLUMN_REMINDER},
-                COLUMN_DATE + " >= ?",
-                new String[]{currentDate},
-                null, null, COLUMN_DATE + " ASC, " + COLUMN_START_TIME + " ASC");
+
+        // converting currentDate from MM/dd/yyyy to yyyyMMdd for comparison
+        String[] parts = currentDate.split("/");
+        String reformattedDate = parts[2] + parts[0] + parts[1]; // yyyyMMdd
+        // query that reformats MM/dd/yyyy in SQLite
+        String query = "SELECT * FROM " + TABLE_NAME +
+                " WHERE (SUBSTR(" + COLUMN_DATE + ", 7, 4) || SUBSTR(" + COLUMN_DATE + ", 1, 2) || SUBSTR(" + COLUMN_DATE + ", 4, 2)) >= ?" +
+                " ORDER BY " + COLUMN_DATE + " ASC, " + COLUMN_START_TIME + " ASC";
+
+        Cursor cursor = database.rawQuery(query, new String[]{reformattedDate});
 
         int nameIndex = cursor.getColumnIndex(COLUMN_NAME);
         int descIndex = cursor.getColumnIndex(COLUMN_DESC);
@@ -173,12 +179,20 @@ public class TaskDb {
         return futureTasks;
     }
     public ArrayList<Task> getPastTasks(String currentDate) {
+
         ArrayList<Task> futureTasks = new ArrayList<>();
-        Cursor cursor = database.query(TABLE_NAME,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_DESC, COLUMN_DATE, COLUMN_START_TIME, COLUMN_END_TIME, COLUMN_REMINDER},
-                COLUMN_DATE + " < ?",
-                new String[]{currentDate},
-                null, null, COLUMN_DATE + " DESC, " + COLUMN_START_TIME + " ASC");
+
+        // converting currentDate from MM/dd/yyyy to yyyyMMdd for comparison
+        String[] parts = currentDate.split("/");
+        String reformattedDate = parts[2] + parts[0] + parts[1]; // yyyyMMdd
+        // query that reformats MM/dd/yyyy in SQLite
+        String query = "SELECT * FROM " + TABLE_NAME +
+                " WHERE (SUBSTR(" + COLUMN_DATE + ", 7, 4) || SUBSTR(" + COLUMN_DATE + ", 1, 2) || SUBSTR(" + COLUMN_DATE + ", 4, 2)) < ?" +
+                " ORDER BY " +
+                "(SUBSTR(" + COLUMN_DATE + ", 7, 4) || SUBSTR(" + COLUMN_DATE + ", 1, 2) || SUBSTR(" + COLUMN_DATE + ", 4, 2)) DESC, " +
+                COLUMN_START_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, new String[]{reformattedDate});
 
         int nameIndex = cursor.getColumnIndex(COLUMN_NAME);
         int descIndex = cursor.getColumnIndex(COLUMN_DESC);
@@ -226,8 +240,8 @@ public class TaskDb {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-            onCreate(db);
+//            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+//            onCreate(db);
         }
     }
 
