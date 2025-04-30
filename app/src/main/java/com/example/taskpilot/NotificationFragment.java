@@ -1,19 +1,44 @@
 package com.example.taskpilot;
 
+
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link NotificationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class NotificationFragment extends Fragment {
+
+    private ListView notificationsListView;
+    private ArrayList<Notification> notificationsList = new ArrayList<>();
+    private NotificationAdapter adapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +84,62 @@ public class NotificationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notification, container, false);
+        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+
+        notificationsListView = view.findViewById(R.id.lvNotifications);
+
+        adapter = new NotificationAdapter(getContext(), notificationsList);
+        notificationsListView.setAdapter(adapter);
+
+        loadUnreadNotifications();
+
+        return view;
+    }
+
+    private void loadUnreadNotifications()
+    {
+        ArrayList<Notification> dummyNotifications = new ArrayList<>();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        dummyNotifications.add(new Notification(
+                "New task assigned: Complete project proposal",
+                currentDate,
+                "14:30",
+                false
+        ));
+
+        dummyNotifications.add(new Notification(
+                "Reminder: Team meeting at 3:00 PM",
+                currentDate,
+                "10:15",
+                false
+        ));
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        String yesterdayDate = dateFormat.format(cal.getTime());
+
+        dummyNotifications.add(new Notification(
+                "Your submission is due tomorrow",
+                yesterdayDate,
+                "16:45",
+                false
+        ));
+
+        cal.add(Calendar.DATE, -2);
+        String olderDate = dateFormat.format(cal.getTime());
+
+        dummyNotifications.add(new Notification(
+                "System update completed successfully",
+                olderDate,
+                "09:00",
+                false
+        ));
+
+        notificationsList.addAll(dummyNotifications);
+        adapter.notifyDataSetChanged();
     }
 }

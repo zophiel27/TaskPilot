@@ -10,8 +10,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Past Tasks"
-        android:textSize="24dp"
+        android:text="@string/past_tasks"
+        android:textSize="24sp"
         android:textColor="#673AB7"
         android:gravity="center"
         android:textStyle="bold"

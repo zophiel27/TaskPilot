@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Task"
+        android:text="@string/add_new_task"
         android:textColor="#673AB7"
         android:textSize="24sp"
         android:padding="16dp"

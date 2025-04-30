@@ -2,4 +2,8 @@
     <string name="app_name">TaskPilot</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notifications">Notifications</string>
+    <string name="past_tasks">Past Tasks</string>
+    <string name="upcoming_tasks">Upcoming Tasks</string>
+    <string name="add_new_task">Add New Task</string>
 </resources>
