@@ -7,6 +7,14 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +22,11 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class PastFragment extends Fragment {
+
+    private ListView tasksListView;
+    private ArrayList<Task> taskList = new ArrayList<>();
+    private TaskAdapter adapter;
+    private String currentDate;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +72,38 @@ public class PastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_past, container, false);
+        View view = inflater.inflate(R.layout.fragment_past, container, false);
+
+        tasksListView = view.findViewById(R.id.lvPastTasks);
+
+        adapter = new TaskAdapter(getContext(), taskList);
+        tasksListView.setAdapter(adapter);
+
+        loadPastTasks();
+
+        return view;
+    }
+
+    private void loadPastTasks()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        currentDate = sdf.format(new Date());
+
+        TaskDb db = new TaskDb(getActivity());
+        db.open();
+
+        taskList.clear();
+        // populate the list view
+        taskList.addAll(db.getPastTasks(currentDate));
+        adapter.notifyDataSetChanged();
+
+        db.close();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // everytime another task is added, it should update in the past fragment if it applies to that task
+        loadPastTasks();
     }
 }

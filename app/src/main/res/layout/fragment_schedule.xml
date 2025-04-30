@@ -5,10 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".ScheduleFragment">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:fillViewport="true">-->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -16,21 +16,34 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Upcoming Tasks"
+                            android:textSize="24dp"
+                            android:gravity="center"
+                            android:textColor="#673AB7"
+                            android:textStyle="bold"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            />
+
                         <CalendarView
                             android:id="@+id/calendarView"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"/>
+                            android:layout_height="wrap_content"/>
 
                         <ListView
                             android:id="@+id/lvTasks"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:divider="@android:color/transparent"
-                            android:dividerHeight="16dp"/>
+                            android:dividerHeight="14dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never"/>
                 </LinearLayout>
 
-        </ScrollView>
+<!--        </ScrollView>-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddTask"
