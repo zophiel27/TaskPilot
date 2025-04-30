@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:hint="Start time">
+                android:hint="Start time *">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etStartTime"
@@ -86,7 +86,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="End time">
+                android:hint="End time *">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEndTime"

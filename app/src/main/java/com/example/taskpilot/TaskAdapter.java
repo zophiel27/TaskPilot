@@ -34,7 +34,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         if (task != null)
         {
             taskTime.setText(task.time);
-            taskTitle.setText(task.title);
+            taskTitle.setText(task.name);
             taskDescription.setText(task.description);
         }
 

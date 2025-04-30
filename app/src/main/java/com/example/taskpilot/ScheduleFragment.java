@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -36,6 +37,7 @@ public class ScheduleFragment extends Fragment {
     private ListView tasksListView;
     private ArrayList<Task> taskList = new ArrayList<>();
     FloatingActionButton fabAddTask;
+    private TaskAdapter adapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -67,14 +69,9 @@ public class ScheduleFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -86,14 +83,22 @@ public class ScheduleFragment extends Fragment {
         tasksListView = view.findViewById(R.id.lvTasks);
         fabAddTask = view.findViewById(R.id.fabAddTask);
 
-        taskList.add(new Task("Design new UX flow for Michael", "Start from screen 16", "04/01/2025 - 04/04/2025", "14:00 - 15:00"));
-        taskList.add(new Task("Brainstorm with the team", "Define the problem or question that...", "04/01/2025 - 04/21/2025", "14:00 - 15:00"));
-        taskList.add(new Task("Workout with Ella", "We will do the legs and back workout", "04/30/2025 - 05/04/2025", "19:00 - 20:00"));
-
-        TaskAdapter adapter = new TaskAdapter(getContext(), taskList);
-        tasksListView.setAdapter(adapter);
+//        taskList.add(new Task("Design new UX flow for Michael", "Start from screen 16", "04/01/2025", "14:00 - 15:00"));
+//        taskList.add(new Task("Brainstorm with the team", "Define the problem or question that...", "04/01/2025", "14:00 - 15:00"));
+//        taskList.add(new Task("Workout with Ella", "We will do the legs and back workout", "05/04/2025", "19:00 - 20:00"));
 
         fabAddTask.setOnClickListener(v -> showAddTaskDialog());
+
+        TaskDb db = new TaskDb(getActivity());
+        db.open();
+
+        // populate the list view
+        taskList.addAll(db.getAllTasks());
+        adapter = new TaskAdapter(getContext(), taskList);
+        tasksListView.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
+
+        db.close();
 
         return view;
     }
@@ -101,7 +106,6 @@ public class ScheduleFragment extends Fragment {
     private void showAddTaskDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Add New Task");
         builder.setCustomTitle(LayoutInflater.from(getContext()).inflate(R.layout.dialog_title, null));
 
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_task, null);
@@ -116,8 +120,53 @@ public class ScheduleFragment extends Fragment {
 
         etDate.setOnClickListener(v -> showDatePicker(etDate));
 
-        etStartTime.setOnClickListener(v -> showTimePicker(etStartTime));
-        etEndTime.setOnClickListener(v -> showTimePicker(etEndTime));
+        final int[] startTimeHour = new int[1];
+        final int[] startTimeMinute = new int[1];
+        final int[] endTimeHour = new int[1];
+        final int[] endTimeMinute = new int[1];
+
+        etStartTime.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            TimePickerDialog timePicker = new TimePickerDialog(
+                    getContext(),
+                    (view, hourOfDay, minute) -> {
+                        startTimeHour[0] = hourOfDay;
+                        startTimeMinute[0] = minute;
+                        String selectedTime = String.format(Locale.getDefault(),
+                                "%02d:%02d", hourOfDay, minute);
+                        etStartTime.setText(selectedTime);
+
+                        if (!etEndTime.getText().toString().isEmpty()) {
+                            validateTimeRange(etStartTime, etEndTime);
+                        }
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true);
+            timePicker.show();
+        });
+
+        etEndTime.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            TimePickerDialog timePicker = new TimePickerDialog(
+                    getContext(),
+                    (view, hourOfDay, minute) -> {
+                        endTimeHour[0] = hourOfDay;
+                        endTimeMinute[0] = minute;
+                        String selectedTime = String.format(Locale.getDefault(),
+                                "%02d:%02d", hourOfDay, minute);
+                        etEndTime.setText(selectedTime);
+
+                        // validate against start time if it's set
+                        if (!etStartTime.getText().toString().isEmpty()) {
+                            validateTimeRange(etStartTime, etEndTime);
+                        }
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true);
+            timePicker.show();
+        });
 
         etReminder.setOnClickListener(v -> showReminderPicker(etReminder));
 
@@ -129,14 +178,30 @@ public class ScheduleFragment extends Fragment {
             String endTime = etEndTime.getText().toString().trim();
             String reminder = etReminder.getText().toString().trim();
 
-            if (!taskName.isEmpty()) {
-//                Task newTask = new Task(taskName, description, date, startTime,
-//                        endTime, reminder);
-//                dbHelper.addTask(newTask);
-//                refreshTaskList();
-            } else {
-                Toast.makeText(getContext(), "Event name is required", Toast.LENGTH_SHORT).show();
+            // validating fields (name, start time and end time are compulsory)
+            if (taskName.isEmpty()) {
+                Toast.makeText(getContext(), "Task name is required", Toast.LENGTH_SHORT).show();
+                return;
             }
+            if (startTime.isEmpty() || endTime.isEmpty()) {
+                Toast.makeText(getContext(), "Time is required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!isEndTimeAfterStartTime(startTime, endTime)) {
+                Toast.makeText(getContext(), "Time is not set correctly", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // all validation checks have passed and so task can be stored in db
+            TaskDb db = new TaskDb(getActivity());
+            db.open();
+            // insert in database
+            db.insert(taskName, description, date, startTime, endTime, reminder);
+            // update the list view as well
+            taskList.clear();
+            taskList.addAll(db.getAllTasks());
+            adapter.notifyDataSetChanged();
+            db.close();
         });
 
         builder.setNegativeButton("Cancel", null);
@@ -160,21 +225,6 @@ public class ScheduleFragment extends Fragment {
         datePicker.show();
     }
 
-    private void showTimePicker(TextInputEditText editText) {
-        Calendar calendar = Calendar.getInstance();
-        TimePickerDialog timePicker = new TimePickerDialog(
-                getContext(),
-                (view, hourOfDay, minute) -> {
-                    String selectedTime = String.format(Locale.getDefault(),
-                            "%02d:%02d", hourOfDay, minute);
-                    editText.setText(selectedTime);
-                },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                true); // 24-hour format
-        timePicker.show();
-    }
-
     private void showReminderPicker(TextInputEditText editText) {
         String[] reminderOptions = new String[]{"None", "10 minutes before", "30 minutes before", "1 hour before"};
 
@@ -184,5 +234,39 @@ public class ScheduleFragment extends Fragment {
                     editText.setText(reminderOptions[which]);
                 });
         builder.create().show();
+    }
+
+    private boolean isEndTimeAfterStartTime(String startTime, String endTime) {
+        try {
+            String[] startParts = startTime.split(":");
+            String[] endParts = endTime.split(":");
+
+            int startHour = Integer.parseInt(startParts[0]);
+            int startMinute = Integer.parseInt(startParts[1]);
+            int endHour = Integer.parseInt(endParts[0]);
+            int endMinute = Integer.parseInt(endParts[1]);
+
+            if (endHour > startHour) {
+                return true;
+            } else if (endHour == startHour) {
+                return endMinute > startMinute;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void validateTimeRange(TextInputEditText startTimeEdit, TextInputEditText endTimeEdit) {
+        String startTime = startTimeEdit.getText().toString();
+        String endTime = endTimeEdit.getText().toString();
+
+        if (!startTime.isEmpty() && !endTime.isEmpty()) {
+            if (!isEndTimeAfterStartTime(startTime, endTime)) {
+                endTimeEdit.setError("End time must be after start time");
+            } else {
+                endTimeEdit.setError(null);
+            }
+        }
     }
 }

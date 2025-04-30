@@ -1,7 +1,7 @@
 package com.example.taskpilot;
 
 public class Task {
-    String title;
+    String name;
     String description;
     String date;
     String time;
@@ -19,27 +19,26 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title, String description, String date, String time, String reminder) {
-        this.title = title;
+    public Task(String name, String description, String date, String time, String reminder) {
+        this.name = name;
         this.description = description;
         this.date = date;
         this.time = time;
         this.reminder = reminder;
     }
 
-    public Task(String title, String description, String date, String time) {
-        this.title = title;
+    public Task(String name, String description, String date, String time) {
+        this.name = name;
         this.description = description;
         this.date = date;
         this.time = time;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -65,6 +64,5 @@ public class Task {
     public void setTime(String time) {
         this.time = time;
     }
-
 
 }
