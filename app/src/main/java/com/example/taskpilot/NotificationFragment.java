@@ -39,6 +39,7 @@ public class NotificationFragment extends Fragment {
     private ListView notificationsListView;
     private ArrayList<Notification> notificationsList = new ArrayList<>();
     private NotificationAdapter adapter;
+    private String currentDate;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,58 +89,72 @@ public class NotificationFragment extends Fragment {
 
         notificationsListView = view.findViewById(R.id.lvNotifications);
 
+//        adapter = new NotificationAdapter(getContext(), notificationsList);
+//        notificationsListView.setAdapter(adapter);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        currentDate = sdf.format(new Date());
+
+        TaskDb db = new TaskDb(getActivity());
+        db.open();
+
+//        inserting dummy notifications - only run this once
+//        db.insertDummyNotifications();
+
+        // populate the list view
+        notificationsList.addAll(db.getAllNotifications());
         adapter = new NotificationAdapter(getContext(), notificationsList);
         notificationsListView.setAdapter(adapter);
 
-        loadUnreadNotifications();
+        db.close();
 
         return view;
     }
 
-    private void loadUnreadNotifications()
-    {
-        ArrayList<Notification> dummyNotifications = new ArrayList<>();
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        String currentDate = dateFormat.format(new Date());
-
-        dummyNotifications.add(new Notification(
-                "New task assigned: Complete project proposal",
-                currentDate,
-                "14:30",
-                false
-        ));
-
-        dummyNotifications.add(new Notification(
-                "Reminder: Team meeting at 3:00 PM",
-                currentDate,
-                "10:15",
-                false
-        ));
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-        String yesterdayDate = dateFormat.format(cal.getTime());
-
-        dummyNotifications.add(new Notification(
-                "Your submission is due tomorrow",
-                yesterdayDate,
-                "16:45",
-                false
-        ));
-
-        cal.add(Calendar.DATE, -2);
-        String olderDate = dateFormat.format(cal.getTime());
-
-        dummyNotifications.add(new Notification(
-                "System update completed successfully",
-                olderDate,
-                "09:00",
-                false
-        ));
-
-        notificationsList.addAll(dummyNotifications);
-        adapter.notifyDataSetChanged();
-    }
+//    private void loadUnreadNotifications()
+//    {
+//        ArrayList<Notification> dummyNotifications = new ArrayList<>();
+//
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+//        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+//        String currentDate = dateFormat.format(new Date());
+//
+//        dummyNotifications.add(new Notification(
+//                "New task assigned: Complete project proposal",
+//                currentDate,
+//                "14:30",
+//                false
+//        ));
+//
+//        dummyNotifications.add(new Notification(
+//                "Reminder: Team meeting at 3:00 PM",
+//                currentDate,
+//                "10:15",
+//                false
+//        ));
+//
+//        Calendar cal = Calendar.getInstance();
+//        cal.add(Calendar.DATE, -1);
+//        String yesterdayDate = dateFormat.format(cal.getTime());
+//
+//        dummyNotifications.add(new Notification(
+//                "Your submission is due tomorrow",
+//                yesterdayDate,
+//                "16:45",
+//                false
+//        ));
+//
+//        cal.add(Calendar.DATE, -2);
+//        String olderDate = dateFormat.format(cal.getTime());
+//
+//        dummyNotifications.add(new Notification(
+//                "System update completed successfully",
+//                olderDate,
+//                "09:00",
+//                false
+//        ));
+//
+//        notificationsList.addAll(dummyNotifications);
+//        adapter.notifyDataSetChanged();
+//    }
 }

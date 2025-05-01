@@ -29,12 +29,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         TextView taskTime = convertView.findViewById(R.id.tvTaskTime);
         TextView taskTitle = convertView.findViewById(R.id.tvTaskTitle);
+        TextView taskDate = convertView.findViewById(R.id.tvTaskDate);
         TextView taskDescription = convertView.findViewById(R.id.tvTaskDescription);
 
         if (task != null)
         {
             taskTime.setText(task.time);
             taskTitle.setText(task.name);
+            taskDate.setText(task.date);
             taskDescription.setText(task.description);
         }
 

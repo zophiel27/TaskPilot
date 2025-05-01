@@ -7,14 +7,6 @@ public class Notification {
     String time;
     boolean marked_read;
 
-    public boolean isMarked_read() {
-        return marked_read;
-    }
-
-    public void setMarked_read(boolean marked_read) {
-        this.marked_read = marked_read;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -55,5 +47,10 @@ public class Notification {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public boolean getMarkedRead() {
+        return marked_read;
+    }
+    public void setMarkedRead(boolean markedRead) { this.marked_read = markedRead; }
 
 }

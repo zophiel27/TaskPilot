@@ -18,8 +18,9 @@ public class TaskDb {
     MyOpenHelper helper;
 
     private final String DATABASE_NAME = "TaskDB";
-    private final int DATABASE_VERSION = 2;
+    private final int DATABASE_VERSION = 4;
 
+    // task table
     private static final String TABLE_NAME = "tasks";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "event_name";
@@ -28,6 +29,14 @@ public class TaskDb {
     private static final String COLUMN_START_TIME = "start_time";
     private static final String COLUMN_END_TIME = "end_time";
     private static final String COLUMN_REMINDER = "reminder";
+
+    // notification table
+    private static final String NOTIF_TABLE = "notifications";
+    private static final String NOTIF_ID = "id";
+    private static final String NOTIF_MESSAGE = "message";
+    private static final String NOTIF_DATE = "date";
+    private static final String NOTIF_TIME = "time";
+    private static final String NOTIF_MARKED = "marked_read";
 
     public TaskDb(Context context)
     {
@@ -151,7 +160,7 @@ public class TaskDb {
         // query that reformats MM/dd/yyyy in SQLite
         String query = "SELECT * FROM " + TABLE_NAME +
                 " WHERE (SUBSTR(" + COLUMN_DATE + ", 7, 4) || SUBSTR(" + COLUMN_DATE + ", 1, 2) || SUBSTR(" + COLUMN_DATE + ", 4, 2)) >= ?" +
-                " ORDER BY " + COLUMN_DATE + " ASC, " + COLUMN_START_TIME + " ASC";
+                " ORDER BY " + COLUMN_DATE + " ASC, " + COLUMN_END_TIME + " ASC";
 
         Cursor cursor = database.rawQuery(query, new String[]{reformattedDate});
 
@@ -218,6 +227,132 @@ public class TaskDb {
         return futureTasks;
     }
 
+    public long insertNotification(String message, String date, String time) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(NOTIF_MESSAGE, message);
+        cv.put(NOTIF_DATE, date);
+        cv.put(NOTIF_TIME, time);
+        cv.put(NOTIF_MARKED, 0);
+
+        return database.insert(NOTIF_TABLE, null, cv);
+    }
+
+    public ArrayList<Notification> getAllNotifications() {
+
+        ArrayList<Notification> list = new ArrayList<>();
+
+        String query = "SELECT * FROM " + NOTIF_TABLE +
+                " ORDER BY " +
+                "(SUBSTR(" + NOTIF_DATE + ", 7, 4) || SUBSTR(" + NOTIF_DATE + ", 1, 2) || SUBSTR(" + NOTIF_DATE + ", 4, 2)) DESC, " +
+                NOTIF_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        int msgIndex = cursor.getColumnIndex(NOTIF_MESSAGE);
+        int dateIndex = cursor.getColumnIndex(NOTIF_DATE);
+        int timeIndex = cursor.getColumnIndex(NOTIF_TIME);
+        int markedIndex = cursor.getColumnIndex(NOTIF_MARKED);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Notification notif = new Notification();
+                notif.setMessage(cursor.getString(msgIndex));
+                notif.setDate(cursor.getString(dateIndex));
+                notif.setTime(cursor.getString(timeIndex));
+                notif.setMarkedRead(cursor.getInt(markedIndex) == 1);
+
+                list.add(notif);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public ArrayList<Notification> getReadNotifications(String currentDate) {
+
+        ArrayList<Notification> list = new ArrayList<>();
+
+        String[] parts = currentDate.split("/");
+        String reformattedDate = parts[2] + parts[0] + parts[1];
+
+        String query = "SELECT * FROM " + NOTIF_TABLE +
+                " WHERE " + NOTIF_MARKED + " = 1 AND " +
+                "(SUBSTR(" + NOTIF_DATE + ", 7, 4) || SUBSTR(" + NOTIF_DATE + ", 1, 2) || SUBSTR(" + NOTIF_DATE + ", 4, 2)) >= ?" +
+                " ORDER BY " +
+                "(SUBSTR(" + NOTIF_DATE + ", 7, 4) || SUBSTR(" + NOTIF_DATE + ", 1, 2) || SUBSTR(" + NOTIF_DATE + ", 4, 2)) DESC, " +
+                NOTIF_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, new String[]{reformattedDate});
+
+        int msgIndex = cursor.getColumnIndex(NOTIF_MESSAGE);
+        int dateIndex = cursor.getColumnIndex(NOTIF_DATE);
+        int timeIndex = cursor.getColumnIndex(NOTIF_TIME);
+        int markedIndex = cursor.getColumnIndex(NOTIF_MARKED);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Notification notif = new Notification();
+                notif.setMessage(cursor.getString(msgIndex));
+                notif.setDate(cursor.getString(dateIndex));
+                notif.setTime(cursor.getString(timeIndex));
+                notif.setMarkedRead(cursor.getInt(markedIndex) == 1);
+
+                list.add(notif);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public ArrayList<Notification> getUnreadNotifications(String currentDate) {
+
+        ArrayList<Notification> list = new ArrayList<>();
+
+        String[] parts = currentDate.split("/");
+        String reformattedDate = parts[2] + parts[0] + parts[1];
+
+        String query = "SELECT * FROM " + NOTIF_TABLE +
+                " WHERE " + NOTIF_MARKED + " = 0 AND " +
+                "(SUBSTR(" + NOTIF_DATE + ", 7, 4) || SUBSTR(" + NOTIF_DATE + ", 1, 2) || SUBSTR(" + NOTIF_DATE + ", 4, 2)) >= ?" +
+                " ORDER BY " +
+                "(SUBSTR(" + NOTIF_DATE + ", 7, 4) || SUBSTR(" + NOTIF_DATE + ", 1, 2) || SUBSTR(" + NOTIF_DATE + ", 4, 2)) DESC, " +
+                NOTIF_TIME + " DESC";
+
+        Cursor cursor = database.rawQuery(query, new String[]{reformattedDate});
+
+        int msgIndex = cursor.getColumnIndex(NOTIF_MESSAGE);
+        int dateIndex = cursor.getColumnIndex(NOTIF_DATE);
+        int timeIndex = cursor.getColumnIndex(NOTIF_TIME);
+        int markedIndex = cursor.getColumnIndex(NOTIF_MARKED);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Notification notif = new Notification();
+                notif.setMessage(cursor.getString(msgIndex));
+                notif.setDate(cursor.getString(dateIndex));
+                notif.setTime(cursor.getString(timeIndex));
+                notif.setMarkedRead(cursor.getInt(markedIndex) == 1);
+
+                list.add(notif);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public int markNotificationAsRead(int id) {
+        ContentValues cv = new ContentValues();
+        cv.put(NOTIF_MARKED, 1);
+        return database.update(NOTIF_TABLE, cv, NOTIF_ID + "=?", new String[]{String.valueOf(id)});
+    }
+
+    public void insertDummyNotifications() {
+        insertNotification("Welcome to the app!", "04/30/2025", "09:00");
+        insertNotification("Your task is due tomorrow", "05/01/2025", "10:30");
+        insertNotification("This is a reminder", "05/01/2025", "18:00");
+    }
+
     private class MyOpenHelper extends SQLiteOpenHelper
     {
         public MyOpenHelper(Context c)
@@ -236,12 +371,29 @@ public class TaskDb {
                     COLUMN_END_TIME + " TEXT NOT NULL," +
                     COLUMN_REMINDER + " TEXT)";
             db.execSQL(query);
+
+            String notificationQuery = "CREATE TABLE notifications (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "message TEXT NOT NULL," +
+                    "date TEXT," +
+                    "time TEXT," +
+                    "marked_read INTEGER DEFAULT 0)";
+            db.execSQL(notificationQuery);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + NOTIF_TABLE);
 //            onCreate(db);
+            if (oldVersion <= 3) {
+                String notificationQuery = "CREATE TABLE notifications (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        "message TEXT NOT NULL," +
+                        "date TEXT," +
+                        "time TEXT," +
+                        "marked_read INTEGER DEFAULT 0)";
+                db.execSQL(notificationQuery);
+            }
         }
     }
 

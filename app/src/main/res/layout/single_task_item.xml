@@ -7,14 +7,29 @@
     android:background="@drawable/task_item_background"
     >
 
-    <TextView
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="10:30 - 15:30"
-        android:id="@+id/tvTaskTime"
-        android:textSize="14sp"
-        android:textColor="@color/subText"
-        />
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="11/04/2025"
+            android:id="@+id/tvTaskDate"
+            android:textSize="14sp"
+            android:layout_marginRight="16dp"
+            android:textColor="@color/subText"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:30 - 15:30"
+            android:id="@+id/tvTaskTime"
+            android:textSize="14sp"
+            android:textColor="@color/subText"
+            />
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
