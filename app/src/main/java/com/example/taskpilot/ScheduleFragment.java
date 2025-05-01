@@ -6,16 +6,11 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,7 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -110,7 +104,7 @@ public class ScheduleFragment extends Fragment {
     private void showAddTaskDialog()
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setCustomTitle(LayoutInflater.from(getContext()).inflate(R.layout.dialog_title, null));
+        builder.setCustomTitle(LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_task_title, null));
 
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_add_task, null);
         builder.setView(dialogView);

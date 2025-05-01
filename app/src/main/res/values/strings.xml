@@ -6,4 +6,5 @@
     <string name="past_tasks">Past Tasks</string>
     <string name="upcoming_tasks">Upcoming Tasks</string>
     <string name="add_new_task">Add New Task</string>
+    <string name="change_profile_picture">Change Profile Picture</string>
 </resources>
