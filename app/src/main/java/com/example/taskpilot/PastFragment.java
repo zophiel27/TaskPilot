@@ -104,6 +104,7 @@ public class PastFragment extends Fragment {
         super.onResume();
 
         // everytime another task is added, it should update in the past fragment if it applies to that task
+        // also if the scheduled time for a task has passed
         loadPastTasks();
     }
 }

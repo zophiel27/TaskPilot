@@ -4,4 +4,12 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
+    <color name="iconTint">#EFE6FF</color>
+    <color name="itemBackground">#868686</color>"
+    <color name="primaryColor">#EFE6FF</color>"
+    <color name="text">#FF000000</color>
+    <color name="subText">#616161</color>
+
+
 </resources>

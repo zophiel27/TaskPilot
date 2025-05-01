@@ -5,5 +5,11 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+    <color name="iconTint">#000000</color>"
+    <color name="itemBackground">#EFE6FF</color>"
+    <color name="primaryColor">#673AB7</color>"
+    <color name="text">#303030</color>
+    <color name="subText">@android:color/darker_gray</color>
+
     <style name="Theme.TaskPilot" parent="Base.Theme.TaskPilot" />
 </resources>
